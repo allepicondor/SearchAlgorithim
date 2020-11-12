@@ -10,16 +10,35 @@ function Create2DArray(shape,intializer=0){
     return array;
     
 }
-function contains(array,item){
+function listToString(list){
+    return "["+list[0]+','+list[1]+"]"
+}
+function Vectorcontains(array,item){
     for (let cord of array){
       if (cord.x == item.x && cord.y == item.y){
         return true
       }
     }
     return false
-  }
+}
+function listContains(array,item){
+    for (let cord of array){
+        if (cord[0] == item[0] && cord[1] == item[1]){
+            return true
+        }
+    }
+    return false
+}
+
 function listEqual(list1,list2){
     return (list1[0] == list2[0] && list1[1] == list2[1])
+}
+function convertVecArrToListArr(array){
+    let newList = [];
+    for (let item of array){
+        newList.push([item.x,item.y])
+    }
+    return newList;
 }
 function copyArray(array) {
 	let NewArray = [];
