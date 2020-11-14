@@ -8,10 +8,39 @@ let searching = false
 let searched = false
 function setup() {
   createCanvas(602, 602);
+  let clearButton = createButton("Clear")
+  clearButton.mousePressed(clearBoard)
+  let WallButton = createButton("Walls")
+  WallButton.mousePressed(function(){
+    currentMode = 3
+  })
+  let SearchButton = createButton("Search!")
+  SearchButton.mousePressed(function(){
+    SA = new SearchAlgorthim(board,[startPos.x,startPos.y],[finishPos.x,finishPos.y],obstacles)
+    searching = true
+  })
+  let StartButton = createButton("StartMode")
+  StartButton.mousePressed(function(){
+    currentMode = 2
+  })
+  let FinishButton = createButton("FinishMode")
+  FinishButton.mousePressed(function(){
+    currentMode = 1
+  })
   board = new Board([600,600],20);
-  //let p = {'0,0':[1,1]}
-  //console.log(p[[0,0].toString()],[0,0].toString())
+  let p = [[0,0],[1,1],[2,2]]
+  console.log(listIndexOf(p,[2,2]))
 }
+
+function clearBoard() {
+  obstacles = []
+  startPos = []
+  SA;
+  finishPos = []
+  searching = false
+  searched = false
+}
+
 function draw() {
   background(220);
   board.draw();
@@ -28,6 +57,26 @@ function draw() {
     drawPath()
   }
 }
+function mouseClicked(){
+  let cord = ConvertPosToCord([mouseX,mouseY])
+  if (currentMode == 3){
+    if (!Vectorcontains(obstacles,cord)){
+      obstacles.push(cord)
+    }
+  }else if (currentMode == 2){
+    startPos = cord
+  }else if (currentMode == 1){
+    finishPos = cord
+  }else if (currentMode == 4){
+    if (Vectorcontains(obstacles,cord)){
+      obstacles.splice(VecIndexOf(obstacles,cord),1)
+    }if (startPos.x == cord.x && startPos.y == cord.y){
+      startPos = []
+    }if (finishPos.x == cord.x && finishPos.y == cord.y){
+      finishPos = []
+    }
+  }
+}
 function mouseDragged(){
   let cord = ConvertPosToCord([mouseX,mouseY])
   if (currentMode == 3){
@@ -40,7 +89,7 @@ function mouseDragged(){
     finishPos = cord
   }else if (currentMode == 4){
     if (Vectorcontains(obstacles,cord)){
-      obstacles.splice(obstacles.indexOf(cord),1)
+      obstacles.splice(VecIndexOf(obstacles,cord),1)
     }if (startPos.x == cord.x && startPos.y == cord.y){
       startPos = []
     }if (finishPos.x == cord.x && finishPos.y == cord.y){

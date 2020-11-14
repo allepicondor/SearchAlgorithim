@@ -29,7 +29,26 @@ function listContains(array,item){
     }
     return false
 }
-
+function listIndexOf(array,item){
+	let counter = 0
+	for (let cord of array){
+		if (cord[0] == item[0] && cord[1] == item[1]){
+			return counter
+		}
+		counter++;
+	}
+	return -1
+}
+function VecIndexOf(array,item){
+	let counter = 0
+	for (let cord of array){
+		if (cord.x == item.x && cord.y == item.y){
+			return counter
+		}
+		counter++;
+	}
+	return -1
+}
 function listEqual(list1,list2){
     return (list1[0] == list2[0] && list1[1] == list2[1])
 }
