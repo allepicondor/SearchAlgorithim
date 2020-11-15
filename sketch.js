@@ -1,6 +1,6 @@
 let obstacles = []
-let startPos = []
-let finishPos = []
+let startPos = null
+let finishPos = null
 let board;
 let currentMode = 3
 let SA;
@@ -14,11 +14,12 @@ function setup() {
   WallButton.mousePressed(function(){
     currentMode = 3
   })
-  let SearchButton = createButton("Search!")
-  SearchButton.mousePressed(function(){
-    SA = new SearchAlgorthim(board,[startPos.x,startPos.y],[finishPos.x,finishPos.y],obstacles)
-    searching = true
+  let Show = createButton("Show")
+  Show.mousePressed(function(){
+    searched = false
   })
+  let SearchButton = createButton("Search!")
+  SearchButton.mousePressed(search)
   let StartButton = createButton("StartMode")
   StartButton.mousePressed(function(){
     currentMode = 2
@@ -28,15 +29,13 @@ function setup() {
     currentMode = 1
   })
   board = new Board([600,600],20);
-  let p = [[0,0],[1,1],[2,2]]
-  console.log(listIndexOf(p,[2,2]))
 }
 
 function clearBoard() {
   obstacles = []
-  startPos = []
+  startPos = null
   SA;
-  finishPos = []
+  finishPos = null
   searching = false
   searched = false
 }
@@ -44,7 +43,6 @@ function clearBoard() {
 function draw() {
   background(220);
   board.draw();
-  drawPieces();
   if (searching){
     if (SA.search()){
       searching = false
@@ -56,50 +54,63 @@ function draw() {
     drawNodes()
     drawPath()
   }
+  drawPieces();
 }
 function mouseClicked(){
   let cord = ConvertPosToCord([mouseX,mouseY])
-  if (currentMode == 3){
-    if (!Vectorcontains(obstacles,cord)){
-      obstacles.push(cord)
-    }
-  }else if (currentMode == 2){
-    startPos = cord
-  }else if (currentMode == 1){
-    finishPos = cord
-  }else if (currentMode == 4){
-    if (Vectorcontains(obstacles,cord)){
-      obstacles.splice(VecIndexOf(obstacles,cord),1)
-    }if (startPos.x == cord.x && startPos.y == cord.y){
-      startPos = []
-    }if (finishPos.x == cord.x && finishPos.y == cord.y){
-      finishPos = []
+  if (cord.x >= 0 && cord.y >= 0 && cord.x < board.ArrayX && cord.y < board.ArrayY && !searching){
+    if (currentMode == 3){
+      if (!Vectorcontains(obstacles,cord)){
+        obstacles.push(cord)
+      }
+    }else if (currentMode == 2){
+      startPos = cord
+    }else if (currentMode == 1){
+      finishPos = cord
+    }else if (currentMode == 4){
+      if (Vectorcontains(obstacles,cord)){
+        obstacles.splice(VecIndexOf(obstacles,cord),1)
+      }if (startPos.x == cord.x && startPos.y == cord.y){
+        startPos = []
+      }if (finishPos.x == cord.x && finishPos.y == cord.y){
+        finishPos = []
+      }
     }
   }
 }
 function mouseDragged(){
   let cord = ConvertPosToCord([mouseX,mouseY])
-  if (currentMode == 3){
-    if (!Vectorcontains(obstacles,cord)){
-      obstacles.push(cord)
-    }
-  }else if (currentMode == 2){
-    startPos = cord
-  }else if (currentMode == 1){
-    finishPos = cord
-  }else if (currentMode == 4){
-    if (Vectorcontains(obstacles,cord)){
-      obstacles.splice(VecIndexOf(obstacles,cord),1)
-    }if (startPos.x == cord.x && startPos.y == cord.y){
-      startPos = []
-    }if (finishPos.x == cord.x && finishPos.y == cord.y){
-      finishPos = []
+  if (cord.x >= 0 && cord.y >= 0 && cord.x < board.ArrayX && cord.y < board.ArrayY && !searching){
+    if (currentMode == 3){
+      if (!Vectorcontains(obstacles,cord)){
+        obstacles.push(cord)
+      }
+    }else if (currentMode == 2){
+      startPos = cord
+    }else if (currentMode == 1){
+      finishPos = cord
+    }else if (currentMode == 4){
+      if (Vectorcontains(obstacles,cord)){
+        obstacles.splice(VecIndexOf(obstacles,cord),1)
+      }if (startPos.x == cord.x && startPos.y == cord.y){
+        startPos = []
+      }if (finishPos.x == cord.x && finishPos.y == cord.y){
+        finishPos = []
+      }
     }
   }
 }
 function ConvertPosToCord(pos){
   let cord = [int(pos[0] / board.segment),int(pos[1] / board.segment)]
   return createVector(cord[0], cord[1]);
+}
+function search(){
+  if (startPos!= null && finishPos != null){
+    SA = new SearchAlgorthim(board,[startPos.x,startPos.y],[finishPos.x,finishPos.y],obstacles)
+    searching = true
+  }else{
+    console.log("ERROR")
+  }
 }
 function keyPressed(){
   if (keyCode === 83) {//S for startPos
@@ -112,21 +123,20 @@ function keyPressed(){
     currentMode = 4;
   }
   else if (keyCode === 71){
-    SA = new SearchAlgorthim(board,[startPos.x,startPos.y],[finishPos.x,finishPos.y],obstacles)
-    searching = true
+    search()
   }
 }
 function drawNodes(){
   for (let cord of SA.closeNodes){
-    board.drawSquare(cord,[155,0,0])
+    board.drawSquare(cord,[100,0,0])
   }
   for (let cord of SA.openNodes){
-   board.drawSquare(cord,[0,155,0])
+   board.drawSquare(cord,[0,100,0])
   }
 }
 function drawPath(){
   for (let cord of SA.currentPath){
-    board.drawSquare(cord,[255,155,0])
+    board.drawSquare(cord,[255,255,0])
    }
 }
 function drawPieces(){
@@ -135,9 +145,9 @@ function drawPieces(){
         board.drawSquare([obstacle.x,obstacle.y],[255,0,0]);
     }
   }
-  if (startPos.length != 0)
+  if (startPos != null)
     board.drawSquare([startPos.x,startPos.y],[0,0,255])
-  if (finishPos.length != 0)
+  if (finishPos != null)
     board.drawSquare([finishPos.x,finishPos.y],[0,255,0])
 
 }
